@@ -80,10 +80,13 @@ class UniFiBandwidthSensor(CoordinatorEntity, SensorEntity):
         self._attr_name = f"UniFi {device_name} {data_type}"
         self._attr_unique_id = f"{mac}_{data_type}"
         self._attr_entity_id = f"sensor.unifi_{data_type}_{mac.replace(':', '_')}"
+        # Expose a unit for the sensor. The API fields appear to be bytes-per-second rates
+        # so use bytes per second (B/s) as the native unit. Change as desired (e.g. "Mbps").
+        self._attr_native_unit_of_measurement = "B/s"
     
     @property
-    def state(self):
-        """Return the state of the sensor."""
+    def native_value(self):
+        """Return the native value of the sensor (bytes per second)."""
         client_data = self.coordinator.data.get(self._mac, {})
         _LOGGER.debug(f"Sensor {self._attr_name}: {client_data}")  # Debugging
 
